@@ -23,4 +23,5 @@ type Router interface {
 type RequestMethod interface {
 	Method(method static.HttpMethod) RequestMethod
 	Register(path string, hdl http.HandlerFunc) RequestMethod
+	GetHandlersByMethod(method static.HttpMethod) []HandlerFunc
 }

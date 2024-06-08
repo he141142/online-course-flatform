@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"drake.elearn-platform.ru/internal/transport/http/routers/modules/books"
-	"drake.elearn-platform.ru/static"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
@@ -27,18 +25,6 @@ func main() {
 			_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 		})
 	})
-
-	bookRouter := books.NewBookRouter(r)
-	//add custom api:
-	bookRouter.RequestMethod(static.GET).
-		Register("/all", func(writer http.ResponseWriter, request *http.Request) {
-
-		}).
-		Register("/all", func(writer http.ResponseWriter, request *http.Request) {
-
-		})
-
-	bookRouter.Build()
 
 }
 
