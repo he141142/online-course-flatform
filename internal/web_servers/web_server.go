@@ -6,7 +6,7 @@ import (
 	"drake.elearn-platform.ru/static"
 )
 
-type HttpServer struct {
+type HttpServerConfig struct {
 	Protocol           string
 	Host               string
 	Port               int
@@ -14,6 +14,6 @@ type HttpServer struct {
 	WebServerFramework static.WebServerFramework
 }
 
-func (http HtHttpServer) GetURL() string {
-	return fmt.Sprintf("%s")
+func (http HttpServerConfig) GetURL() string {
+	return fmt.Sprintf("%s://%s:%d", http.Protocol, http.Host, http.Port)
 }

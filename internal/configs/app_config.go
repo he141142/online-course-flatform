@@ -1,15 +1,14 @@
 package configs
 
-import "time"
+import (
+	"time"
+
+	webservers "drake.elearn-platform.ru/internal/web_servers"
+)
 
 type AppConfig struct {
 	ShutdownTimeout time.Duration
 	AppName         string
 	Appversion      string
-}
-
-type HttpConfig struct {
-	HostName string
-	Port     int
-	IPAddr   string
+	WebServerConfig webservers.HttpServerConfig
 }
