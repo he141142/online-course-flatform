@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"os"
 
+	errgrouppoc "drake.elearn-platform.ru/examples/err_group_poc"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
-
-	errgrouppoc "drake.elearn-platform.ru/err_group_poc"
 )
 
 func main() {
