@@ -9,9 +9,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
+
+	errgrouppoc "drake.elearn-platform.ru/err_group_poc"
 )
 
 func main() {
+	InitReader()
 	r := chi.NewRouter()
 	r.Use(cors.Default().Handler)
 	if os.Getenv("SECRET") == "" {
@@ -25,6 +28,10 @@ func main() {
 			_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 		})
 	})
+
+	approach := os.Args[2]
+
+	errgrouppoc.Run(approach)
 
 }
 

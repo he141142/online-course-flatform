@@ -17,3 +17,6 @@ type HttpServerConfig struct {
 func (http HttpServerConfig) GetURL() string {
 	return fmt.Sprintf("%s://%s:%d", http.Protocol, http.Host, http.Port)
 }
+
+type WebServerInstance interface {
+}
