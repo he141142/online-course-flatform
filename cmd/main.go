@@ -5,11 +5,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
-	errgrouppoc "drake.elearn-platform.ru/examples/err_group_poc"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
+
+	"drake.elearn-platform.ru/internal/configs"
+	"drake.elearn-platform.ru/internal/systems"
 )
 
 func main() {
@@ -19,7 +22,6 @@ func main() {
 	if os.Getenv("SECRET") == "" {
 		log.Fatalf("SECRET is not defined in the env variable")
 	}
-
 	r.Group(func(r chi.Router) {
 		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -27,11 +29,13 @@ func main() {
 			_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 		})
 	})
+	// approach := os.Args[2]
+	// errgrouppoc.Run(approach)
 
-	approach := os.Args[2]
+	appConfig := configs.NewAppConfig()
+	_ = systems.NewSystem(appConfig)
 
-	errgrouppoc.Run(approach)
-
+	time.Sleep(time.Hour)
 }
 
 func InitReader() {
