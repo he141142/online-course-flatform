@@ -1,0 +1,133 @@
+@startuml
+class entity {
+  + id: int
+  + entity_name: string
+
+  + SetName()
+  + SetID()
+  + GetName()
+  + GetID()
+}
+
+interface EntityNamer {
+  + GetName()
+}
+
+interface EntityIDer {
+  + GetID()
+}
+
+interface IDSetter {
++ SetID()
+}
+
+interface NameSetter {
++ SetName()
+}
+
+interface Entity {
+    + SetName()
+    + SetID()
+    + GetName()
+    + GetID()
+}
+
+Entity <|-- entity
+Entity <|-- EntityNamer
+Entity <|-- EntityIDer
+Entity <|-- IDSetter
+Entity <|-- NameSetter
+
+interface Event {
+    + GetID() int
+    + OccuredAt() time.Time
+    + EventName() string
+    + Metadata() Metadata
+}
+
+EntityIDer <|-- Event
+
+class event {
+    + id: int
+    + payload: interface{}
+    + metadata: Metadata
+    + occured_at: time.Time
+    + GetID() int
+    + OccuredAt() time.Time
+    + EventName() string
+    + Metadata() Metadata
+}
+
+Event <|-- event
+
+entity Metadata {
++ key: string
++ value: interface{}
++ setKey(key string,value any)
++ get(key string) any
++ delete(key string)
++ configureCommand(cmd *command)
++ configureEvent(event *event)
+}
+
+class command {
+}
+
+Metadata -- command : > config command
+Metadata -- event : > config event
+
+
+class aggregate {
+    + events: []AggregateEvent
+    + Entity: Entity
+    + SetName()
+    + SetID()
+    + GetName()
+    + GetID()
+}
+
+interface AggregateEvent {
+    + GetID() int
+    + OccuredAt() time.Time
+    + EventName() string
+    + Metadata() Metadata
+    + AggregateName() string
+    + AggregateID() string
+    + AggregateVersion() int
+}
+
+aggregate -- AggregateEvent : > manage
+
+Event <|--  AggregateEvent
+
+aggregate *-- Entity
+
+interface Aggregate {
+    + GetID() int
+    + GetName() string
+    + AddEvent(string, EventPayload, ....EventOption)
+    + Events() [] AggregateEvent
+    + ClearEvents()
+    + SetID()
+    + SetName()
+}
+
+interface AggregateNamer {
+    + GetName() string
+}
+
+AggregateNamer <|-- Aggregate
+EntityIDer <|-- Aggregate
+Aggregate <|-- aggregate
+
+interface Eventer {
+    + AddEvent(string, EventPayload, ....EventOption)
+    + Events() [] AggregateEvent
+    + ClearEvents()
+}
+
+Eventer <|-- Aggregate
+
+NameSetter <|-- Aggregate
+IDSetter <|-- Aggregate
+@enduml
