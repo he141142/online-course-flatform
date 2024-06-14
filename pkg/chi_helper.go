@@ -3,8 +3,9 @@ package pkg
 import (
 	"net/http"
 
-	"drake.elearn-platform.ru/static"
 	"github.com/go-chi/chi/v5"
+
+	"drake.elearn-platform.ru/static"
 )
 
 func ByMethod(route chi.Router) map[static.HttpMethod]func(path string, hdl http.HandlerFunc) {

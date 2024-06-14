@@ -16,7 +16,7 @@ interface EntityNamer {
 interface EntityIDer {
   + GetID()
 }
-
+\
 interface IDSetter {
 + SetID()
 }
