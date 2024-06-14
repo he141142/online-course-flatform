@@ -6,8 +6,9 @@ type WaitFunc func(ctx context.Context) error
 type CleanUpTask func(ctx context.Context)
 
 type Waiter interface {
-	Wait(waits ...WaitFunc)
+	WaitFor(waits ...WaitFunc)
 	AddCleanUpTask(cleanTasks ...CleanUpTask)
 	Context() context.Context
-	CancalFunc() context.CancelFunc
+	CancelFunc() context.CancelFunc
+	Wait() error
 }

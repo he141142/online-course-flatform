@@ -1,6 +1,8 @@
 package systems
 
 import (
+	"context"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // This is the PostgreSQL driver package
 	sqldblogger "github.com/simukti/sqldb-logger"
@@ -53,4 +55,12 @@ func (sys *System) initDatabaseConnection() {
 		panic(err)
 	}
 	sys.DbConn = client
+}
+
+func (sys *System) WaitForHttpServer(ctx context.Context) error {
+	return nil
+}
+
+func (sys *System) WaitForRPC(ctx context.Context) error {
+	return nil
 }
