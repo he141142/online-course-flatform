@@ -14,6 +14,6 @@ func (m *Module) Startup(ctx context.Context, mono systems.Service) (err error) 
 }
 
 func Root(ctx context.Context, mono systems.Service) error {
-
-	return nil
+	//authpb.NewMockAuthenticationServer()
+	panic("implement me")
 }

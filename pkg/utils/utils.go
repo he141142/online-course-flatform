@@ -15,3 +15,12 @@ func EnvGetIntValue(varName string, fallBack int) int {
 	}
 	return valueInt
 }
+
+func GetIntValue(valueStr string, fallBack int) int {
+	valueInt, err := strconv.Atoi(valueStr)
+	if err != nil {
+		log.Println(err)
+		return fallBack
+	}
+	return valueInt
+}
