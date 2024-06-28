@@ -2,11 +2,16 @@ package systems
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
+	"drake.elearn-platform.ru/internal/adapters"
+	"drake.elearn-platform.ru/internal/waiter"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // This is the PostgreSQL driver package
 	sqldblogger "github.com/simukti/sqldb-logger"
 	"github.com/simukti/sqldb-logger/logadapter/zapadapter"
+	"golang.org/x/sync/errgroup"
 
 	"drake.elearn-platform.ru/internal/configs"
 	webservers "drake.elearn-platform.ru/internal/web_servers"
@@ -17,13 +22,17 @@ type System struct {
 	AppConfig configs.AppConfig
 	WebServer *webservers.HttpChiInstance
 	DbConn    *sqlx.DB
+	waiter    adapters.Waiter
 }
+
+var _ Service = (*System)(nil)
 
 func NewSystem(cfg configs.AppConfig) *System {
 	system := &System{AppConfig: cfg}
 	if cfg.EnablePostgres {
 		system.initDatabaseConnection()
 	}
+	system.waiter = waiter.NewWaiter(waiter.CatchSignalCfg(true))
 	return system
 }
 
@@ -60,7 +69,28 @@ func (sys *System) initDatabaseConnection() {
 }
 
 func (sys *System) WaitForHttpServer(ctx context.Context) error {
-	return nil
+	restServer := &http.Server{
+		Addr:    fmt.Sprintf(":%d", sys.AppConfig.WebServerConfig.Port),
+		Handler: sys.HttpClient(),
+	}
+
+	group, grCtx := errgroup.WithContext(ctx)
+	group.Go(func() error {
+		logger.Info("Starting HTTP server", context.Background(), nil)
+		return restServer.ListenAndServe()
+	})
+	group.Go(func() error {
+		<-grCtx.Done()
+		fmt.Println("web server to be shutdown")
+		ctx, cancel := context.WithTimeout(context.Background(), sys.AppConfig.ShutdownTimeout)
+		defer cancel()
+		if err := restServer.Shutdown(ctx); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return group.Wait()
 }
 
 func (sys *System) WaitForRPC(ctx context.Context) error {
@@ -77,4 +107,8 @@ func (sys *System) HttpClient() *webservers.HttpChiInstance {
 
 func (sys *System) GetAppConfig() configs.AppConfig {
 	return sys.AppConfig
+}
+
+func (sys *System) Waiter() adapters.Waiter {
+	return sys.waiter
 }
