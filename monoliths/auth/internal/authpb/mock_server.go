@@ -21,7 +21,7 @@ func NewMockAuthenticationServer(app application.App) *MockAuthenticationServer 
 	return &MockAuthenticationServer{app: app}
 }
 
-func (sv *MockAuthenticationServer) RegisterServer(ctx context.Context, httpInstance webservers.HttpChiInstance) {
+func (sv *MockAuthenticationServer) RegisterRestApiEntry(ctx context.Context, httpInstance webservers.HttpChiInstance) {
 	httpInstance.Route("/role", func(r chi.Router) {
 		r.Post("", sv.CreateRole)
 		r.Get("", sv.ListRole)
