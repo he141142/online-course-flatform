@@ -6,16 +6,16 @@ type ConfigOpt interface {
 	Apply(*config)
 }
 
-type catchSignalCfg bool
+type CatchSignalCfg bool
 
-func (cfg catchSignalCfg) Apply(wcf *config) {
+func (cfg CatchSignalCfg) Apply(wcf *config) {
 	wcf.catchSignal = bool(cfg)
 }
 
-type parentCtxOpt struct {
+type ParentCtxOpt struct {
 	context.Context
 }
 
-func (cfg parentCtxOpt) Apply(wcf *config) {
+func (cfg ParentCtxOpt) Apply(wcf *config) {
 	wcf.parentCtx = context.Context(cfg)
 }

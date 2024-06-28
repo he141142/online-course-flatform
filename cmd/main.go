@@ -1,38 +1,57 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"log"
-	"net/http"
 	"os"
-	"time"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 
 	"drake.elearn-platform.ru/internal/configs"
 	"drake.elearn-platform.ru/internal/systems"
+	"drake.elearn-platform.ru/monoliths/auth"
+	onlinecourses "drake.elearn-platform.ru/monoliths/online_courses"
+	"github.com/joho/godotenv"
 )
+
+type monoliths struct {
+	*systems.System
+	modules []systems.Module
+}
 
 func main() {
 	InitReader()
-	r := chi.NewRouter()
-	r.Use(cors.Default().Handler)
-	if os.Getenv("SECRET") == "" {
-		log.Fatalf("SECRET is not defined in the env variable")
-	}
-	r.Group(func(r chi.Router) {
-		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-		})
-	})
 	appConfig := configs.NewAppConfig()
-	_ = systems.NewSystem(appConfig)
+	modules := &monoliths{
+		System: systems.NewSystem(appConfig),
+		modules: []systems.Module{
+			auth.NewAuthModule(),
+			onlinecourses.NewOnlineCoursesModule(),
+			//more modules, each can be a separate microservice
+		},
+	}
 
-	time.Sleep(time.Hour)
+	modules.StartupModules(modules.modules)
+
+	modules.Waiter().WaitFor(
+		modules.WaitForHttpServer,
+		modules.WaitForRPC,
+	)
+
+	err := modules.Waiter().Wait()
+	if err != nil {
+		log.Fatalf("Error waiting for all services to start: %v", err)
+		os.Exit(1)
+	}
+}
+
+func (m *monoliths) StartupModules(modules []systems.Module) {
+	// Start all modules
+	for _, module := range modules {
+		err := module.StartUp(context.Background(), m)
+		if err != nil {
+			log.Fatalf("Error starting module: %v", err)
+		}
+	}
+
 }
 
 func InitReader() {

@@ -12,7 +12,7 @@ import (
 type Module struct {
 }
 
-func (m *Module) Startup(ctx context.Context, mono systems.Service) (err error) {
+func (m *Module) StartUp(ctx context.Context, mono systems.Service) (err error) {
 	return Root(ctx, mono)
 }
 
@@ -24,4 +24,8 @@ func Root(ctx context.Context, mono systems.Service) error {
 	server.RegisterRestApiEntry(ctx, *mono.HttpClient())
 
 	return nil
+}
+
+func NewAuthModule() systems.Module {
+	return &Module{}
 }
