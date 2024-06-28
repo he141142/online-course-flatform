@@ -29,9 +29,6 @@ func main() {
 			_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 		})
 	})
-	// approach := os.Args[2]
-	// errgrouppoc.Run(approach)
-
 	appConfig := configs.NewAppConfig()
 	_ = systems.NewSystem(appConfig)
 

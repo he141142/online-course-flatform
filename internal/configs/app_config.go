@@ -11,9 +11,10 @@ import (
 type AppConfig struct {
 	ShutdownTimeout time.Duration
 	AppName         string
-	Appversion      string
+	AppVersion      string
 	WebServerConfig webservers.HttpServerConfig
 	DBConfig        DBConfig
+	EnablePostgres  bool
 }
 
 func (c *AppConfig) initDbConfig() {
@@ -53,11 +54,13 @@ func NewAppConfig() AppConfig {
 
 	appCfg := AppConfig{
 		AppName:         appName,
-		Appversion:      appVersion,
+		AppVersion:      appVersion,
 		ShutdownTimeout: time.Duration(shutdownTimeout) * time.Second,
 	}
-
-	appCfg.initDbConfig()
+	if os.Getenv("ENABLE_POSTGRESQL") == "true" {
+		appCfg.EnablePostgres = true
+		appCfg.initDbConfig()
+	}
 
 	return appCfg
 }

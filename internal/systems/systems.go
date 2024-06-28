@@ -21,7 +21,9 @@ type System struct {
 
 func NewSystem(cfg configs.AppConfig) *System {
 	system := &System{AppConfig: cfg}
-	system.initDatabaseConnection()
+	if cfg.EnablePostgres {
+		system.initDatabaseConnection()
+	}
 	return system
 }
 
@@ -63,4 +65,16 @@ func (sys *System) WaitForHttpServer(ctx context.Context) error {
 
 func (sys *System) WaitForRPC(ctx context.Context) error {
 	return nil
+}
+
+func (sys *System) DbClient() *sqlx.DB {
+	return sys.DbConn
+}
+
+func (sys *System) HttpClient() *webservers.HttpChiInstance {
+	return sys.WebServer
+}
+
+func (sys *System) GetAppConfig() configs.AppConfig {
+	return sys.AppConfig
 }
