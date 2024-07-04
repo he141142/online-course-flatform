@@ -79,7 +79,7 @@ func (sys *System) WaitForHttpServer(ctx context.Context) error {
 
 	group, grCtx := errgroup.WithContext(ctx)
 	group.Go(func() error {
-		logger.Info("Starting HTTP server", context.Background(), nil)
+		logger.Info(fmt.Sprintf("Starting HTTP server ,addr: %s", fmt.Sprintf("http://%s:%d", sys.AppConfig.WebServerConfig.Host, sys.AppConfig.WebServerConfig.Port)), context.Background(), nil)
 		return restServer.ListenAndServe()
 	})
 	group.Go(func() error {
@@ -97,6 +97,7 @@ func (sys *System) WaitForHttpServer(ctx context.Context) error {
 }
 
 func (sys *System) WaitForRPC(ctx context.Context) error {
+	fmt.Println("RPC server to be started")
 	return nil
 }
 

@@ -14,9 +14,8 @@ func (r *Role) AddPermissions(p []Permission) {
 	r.Permissions = append(r.Permissions, p...)
 }
 
-func NewRole(id int, name string) *Role {
+func NewRole(name string) *Role {
 	return &Role{
-		ID:          id,
 		Name:        name,
 		Permissions: make([]Permission, 0),
 	}
@@ -28,9 +27,8 @@ type Permission struct {
 	FeatureCode string
 }
 
-func NewPermission(id int, featureCode string) *Permission {
+func NewPermission(featureCode string) *Permission {
 	return &Permission{
-		ID:          id,
 		FeatureCode: featureCode,
 	}
 }
