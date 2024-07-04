@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 
 	"drake.elearn-platform.ru/monoliths/auth/internal/domain"
 )
@@ -35,6 +36,7 @@ func (h *CreateRolesCommandHandler) CreateRole(ctx context.Context, command Crea
 		o(&command)
 	}
 	if command.AllowCreatePermissionWithoutExist {
+		fmt.Println("AllowCreatePermissionWithoutExist")
 		err := h.createPermissionWithoutExist(ctx, command.Permissions)
 		if err != nil {
 			return err
@@ -44,11 +46,7 @@ func (h *CreateRolesCommandHandler) CreateRole(ctx context.Context, command Crea
 	if err != nil {
 		return err
 	}
-	lastRoleID, err := h.roleStore.FetchLastID(ctx)
-	if err != nil {
-		return err
-	}
-	role := domain.NewRole(lastRoleID+1, command.RoleName)
+	role := domain.NewRole(command.RoleName)
 	role.AddPermissions(permissions)
 	return h.roleStore.Create(ctx, role)
 }
@@ -62,20 +60,12 @@ func (h *CreateRolesCommandHandler) createPermissionWithoutExist(ctx context.Con
 	for _, p := range permissions {
 		allPermissionPresenter[p.FeatureCode] = true
 	}
-	if len(allPermissionPresenter) == 0 {
-		return nil
-	}
-	permissionToCreate := make([]*domain.Permission, 0)
-	latestID, err := h.permissionStore.FetchLastID()
-	if err != nil {
-		return err
-	}
 
+	permissionToCreate := make([]*domain.Permission, 0)
 	for _, p := range permissionPayload {
 		if _, ok := allPermissionPresenter[p]; !ok {
-			permission := domain.NewPermission(latestID+1, p)
+			permission := domain.NewPermission(p)
 			permissionToCreate = append(permissionToCreate, permission)
-			latestID++
 		}
 	}
 

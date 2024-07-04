@@ -56,6 +56,11 @@ func NewAppConfig() AppConfig {
 		AppName:         appName,
 		AppVersion:      appVersion,
 		ShutdownTimeout: time.Duration(shutdownTimeout) * time.Second,
+		WebServerConfig: webservers.HttpServerConfig{
+			Protocol: "http",
+			Host:     os.Getenv("APP_HOST"),
+			Port:     utils.EnvGetIntValue("APP_PORT", 8080),
+		},
 	}
 	if os.Getenv("ENABLE_POSTGRESQL") == "true" {
 		appCfg.EnablePostgres = true

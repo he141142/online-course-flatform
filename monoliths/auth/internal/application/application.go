@@ -19,7 +19,7 @@ type (
 	}
 
 	Command interface {
-		CreateRole(ctx context.Context, command commands.CreateRolesCommand) error
+		CreateRole(ctx context.Context, command commands.CreateRolesCommand, opt ...commands.CreteRolesCommandOption) error
 		CreatePermission(ctx context.Context, command commands.CreatePermissionCommand) error
 	}
 

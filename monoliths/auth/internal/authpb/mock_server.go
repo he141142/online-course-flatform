@@ -23,8 +23,8 @@ func NewMockAuthenticationServer(app application.App) *MockAuthenticationServer 
 
 func (sv *MockAuthenticationServer) RegisterRestApiEntry(ctx context.Context, httpInstance webservers.HttpChiInstance) {
 	httpInstance.Route("/role", func(r chi.Router) {
-		r.Post("", sv.CreateRole)
-		r.Get("", sv.ListRole)
+		r.Post("/", sv.CreateRole)
+		r.Get("/", sv.ListRole)
 	})
 }
 
@@ -61,5 +61,4 @@ func (sv *MockAuthenticationServer) ListRole(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	drk_http.NewResponseWithStatus(w, http.StatusOK, roles)
-
 }
