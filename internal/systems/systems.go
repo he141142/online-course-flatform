@@ -7,6 +7,7 @@ import (
 
 	"drake.elearn-platform.ru/internal/adapters"
 	"drake.elearn-platform.ru/internal/waiter"
+	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // This is the PostgreSQL driver package
 	sqldblogger "github.com/simukti/sqldb-logger"
@@ -32,6 +33,8 @@ func NewSystem(cfg configs.AppConfig) *System {
 	if cfg.EnablePostgres {
 		system.initDatabaseConnection()
 	}
+	r := chi.NewRouter()
+	system.WebServer = webservers.NewChiHttpServer(r)
 	system.waiter = waiter.NewWaiter(waiter.CatchSignalCfg(true))
 	return system
 }
