@@ -26,71 +26,39 @@ services:
       networks:
         - 'sky-network'
 
-#  REDIS_USER=cmVkaXN1c2Vy
+    app:
+      build: .
+      command: /godocker dev
+      container_name: oline-course-platform
+      ports:
+        - "5000:8888"
 
-#  jaeger:
-#    image: jaegertracing/all-in-one
-#    container_name: jaeger
-#    command:
-#      - "--memory.max-traces"
-#      - "10000"
-#      - "--query.base-path"
-#      - "/jaeger/ui"
-#      - "--prometheus.server-url"
-#      - "http://prometheus:9090"
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 300M
-#    restart: unless-stopped
-#    ports:
-#      - '14268:14268'                   # Jaeger UI
-#      - '4317'                          # OTLP gRPC default port
-#      - '4318'                          # OTLP HTTP default port
-#      - '16686:16686'
-#      - '14250:14250'
-#    environment:
-#      - COLLECTOR_OTLP_ENABLED=true
-#      - METRICS_STORAGE_TYPE=prometheus
-#    networks:
-#      - 'sky-network'
-#
-#
-#  prometheus:
-#    image: prom/prometheus
-#    volumes:
-#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-#    command:
-#      - --web.console.templates=/etc/prometheus/consoles
-#      - --web.console.libraries=/etc/prometheus/console_libraries
-#      - --storage.tsdb.retention.time=1h
-#      - --config.file=/etc/prometheus/prometheus.yml
-#      - --storage.tsdb.path=/prometheus
-#      - --web.enable-lifecycle
-#      - --web.route-prefix=/
-#      - --enable-feature=exemplar-storage
-#    ports:
-#      - '9090:9090'
-#    networks:
-#      - 'sky-network'
-#
-#  otel-collector:
-#    image: otel/opentelemetry-collector-contrib:0.76.1
-#    command : [ --config=/etc/otel-collector-config.yaml ]
-#    volumes:
-#      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-#    ports:
-#      - '1888:1888' # pprof extension
-#      - '8888:8888' # Prometheus metrics exposed by the collector
-#      - '8889:8889' # Prometheus exporter metrics
-#      - '13133:13133' # health_check extension
-#      - '4317:4317' # OTLP gRPC receiver
-#      - '4318:4318' # OTLP http receiver
-#      #      - '55679:55679' # zpages extension
-#      #      - '55681:55681'
-#      - '9464:9464'
-#    networks:
-#      - 'sky-network'
+    datadog:
+#      image: datadog/agent:latest
+      build:
+        context: ./config/dd
+        dockerfile: Dockerfile
+      env_file:
+        - ./config/dd/.env
+      pid: host
+      environment:
+        - DD_API_KEY=drake_dd
+        - DD_LOGS_ENABLED=true
+        - DD_APM_NON_LOCAL_TRAFFIC=true
+      ports:
+        - "8126:8126"
+        - "5052:5052"
+        - "5002:9876"
+        - "5012:9877"
+      stdin_open: true
+      tty: true
+#      volumes:
+#        - ./var/run/docker.sock:/var/run/docker.sock
+#        - ./proc/:/host/proc/:ro
+#        - ./sys/fs/cgroup:/host/sys/fs/cgroup:ro
+#        - ./var/lib/docker/containers:/var/lib/docker/containers:ro
+
+
 
 networks:
   sky-network:
