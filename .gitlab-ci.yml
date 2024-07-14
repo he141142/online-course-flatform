@@ -74,5 +74,6 @@ deploy-portainer:
     #   curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start" \
     #   -H "Authorization: Bearer $(cat portainer_jwt)"
     - echo "start deploy"
+    - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker rm eda-base -f"
     - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker pull registry.gitlab.com/drake-online-course-platform/drake-eda-base:latest"
-    - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker run -d registry.gitlab.com/drake-online-course-platform/drake-eda-base:latest -p 8888:8888 --name eda-base"
+    - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker run -d --name eda-base -p "8888:8888" registry.gitlab.com/drake-online-course-platform/drake-eda-base:latest"
