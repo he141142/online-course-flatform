@@ -6,6 +6,7 @@ stages:
 variables:
   PORTAINER_HOST: '18.181.145.137:9000'
   CONTAINER_NAME: 'online-course-platform'
+  EC2_IP: ec2-18-181-145-137.ap-northeast-1.compute.amazonaws.com
 
 
 
@@ -44,30 +45,33 @@ deploy-portainer:
     - echo "$EC2_PEM" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
+    - docker login registry.gitlab.com -u he141142  -p "$GITLAB_TOKEN"
   script:
     - apk add --no-cache curl jq
-    - >
-      curl -s -X POST "http://$PORTAINER_HOST/api/auth"     -H "Content-Type: application/json"     -d "{\"username\": \"$PORTAINER_USERNAME\", \"password\": \"$PORTAINER_PASSWORD\"}" | jq -r '.jwt' > portainer_jwt
-    - >
-      curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME" \
-      -H "Authorization: Bearer $(cat portainer_jwt)" \
-      -H "Content-Type: application/json" \
-      -d '{
-            "Image": "$CI_REGISTRY_IMAGE:latest",
-            "ExposedPorts": {
-              "80/tcp": {}
-            },
-            "HostConfig": {
-              "PortBindings": {
-                "80/tcp": [
-                  {
-                    "HostPort": "80"
-                  }
-                ]
-              }
-            }
-          }'
+    # - >
+    #   curl -s -X POST "http://$PORTAINER_HOST/api/auth"     -H "Content-Type: application/json"     -d "{\"username\": \"$PORTAINER_USERNAME\", \"password\": \"$PORTAINER_PASSWORD\"}" | jq -r '.jwt' > portainer_jwt
+    # - >
+    #   curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME" \
+    #   -H "Authorization: Bearer $(cat portainer_jwt)" \
+    #   -H "Content-Type: application/json" \
+    #   -d '{
+    #         "Image": "$CI_REGISTRY_IMAGE:latest",
+    #         "ExposedPorts": {
+    #           "80/tcp": {}
+    #         },
+    #         "HostConfig": {
+    #           "PortBindings": {
+    #             "80/tcp": [
+    #               {
+    #                 "HostPort": "80"
+    #               }
+    #             ]
+    #           }
+    #         }
+    #       }'
       
-    - >
-      curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start" \
-      -H "Authorization: Bearer $(cat portainer_jwt)"
+    # - >
+    #   curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start" \
+    #   -H "Authorization: Bearer $(cat portainer_jwt)"
+    - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker pull registry.gitlab.com/drake-online-course-platform/drake-eda-base:latest"
+    - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker run registry.gitlab.com/drake-online-course-platform/drake-eda-base:latest -p 8888:8888"
