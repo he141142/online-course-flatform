@@ -4,7 +4,7 @@ stages:
     - deploy
 
 variables:
-  PORTAINER_HOST: '13.114.66.93:9000'
+  PORTAINER_HOST: '18.181.145.137:9000'
   CONTAINER_NAME: 'online-course-platform'
 
 
