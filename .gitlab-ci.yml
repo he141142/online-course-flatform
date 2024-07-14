@@ -47,8 +47,7 @@ deploy-portainer:
   script:
     - apk add --no-cache curl jq
     - >
-      curl -s -X POST "http://$PORTAINER_HOST/api/auth"     -H "Content-Type: application/json"     -d "{\"username\": \"$PORTAINER_USERNAME\", \"password\":               \"$PORTAINER_PASSWORD\"}"
-      | jq -r '.jwt' > portainer_jwt
+      curl -s -X POST "http://$PORTAINER_HOST/api/auth"     -H "Content-Type: application/json"     -d "{\"username\": \"$PORTAINER_USERNAME\", \"password\": \"$PORTAINER_PASSWORD\"}" | jq -r '.jwt' > portainer_jwt
     - >
       curl -s -X POST "http://$PORTAINER_HOST/api/endpoints/$PORTAINER_ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME" \
       -H "Authorization: Bearer $(cat portainer_jwt)" \
